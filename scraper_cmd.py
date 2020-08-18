@@ -40,7 +40,9 @@ import datetime as datetime
 import os
 
 from bs4 import BeautifulSoup
+from colorama import init, Fore, Style
 from selenium import webdriver
+init(autoreset=False)
 
 exitInputs = ['leave', 'break', 'quit', 'exit', 'end']
 acceptedParsers = ['lxml', 'html5lib', 'html.parser']
@@ -66,17 +68,11 @@ class Scraper(cmd.Cmd):
     # Functions for Setting Values
     def do_file(self, arg):
         """Set the path or just a name for your CSV file."""
-        try:
-            self.csv_file = str(arg)
-        except Exception as e:
-            print(e)
+        self.csv_file = str(arg)
 
     def do_mode(self, arg):
         """Set the mode you want your CSV file to be opened in."""
-        try:
-            self.csv_mode = str(arg)
-        except Exception as e:
-            print(e)
+        self.csv_mode = str(arg)
 
     def do_irow(self, arg):
         """Specify the initial row of your CSV file."""
@@ -85,64 +81,56 @@ class Scraper(cmd.Cmd):
     def do_setup(self, arg):
         """Setup CSV file essential settings."""
         try:
-            self.csv_file = input("CSV File: ")
-            self.csv_mode = input("Open Mode: ")
-            self.initial_row = (input("Initial Row: ")).split(',')
+            self.csv_file = input(f"{Fore.BLUE}CSV File: {Fore.GREEN}")
+            self.csv_mode = input(f"{Fore.BLUE}Open Mode: {Fore.GREEN}")
+            self.initial_row = (input(f"{Fore.BLUE}Initial Row: {Fore.GREEN}")).split(',')
+            print(Style.RESET_ALL)
         except Exception as e:
-            print(e)
+            print(f"{Fore.RED}{e}{Style.RESET_ALL}")
 
     def do_var(self, arg):
         """Set the variable which is equal to the total number of webpages."""
         try:
             self.variable = int(arg)
         except Exception as e:
-            print(e)
+            print(f"{Fore.RED}{e}{Style.RESET_ALL}")
 
     def do_ipage(self, arg):
         """Set the url for the initial webpage."""
-        try:
-            self.initial_webpage = str(arg)
-        except Exception as e:
-            print(e)
+        self.initial_webpage = str(arg)
 
     def do_rpages(self, arg):
         """Set the template for the remainder of webpages."""
-        try:
-            self.rpages = str(arg)
-        except Exception as e:
-            print(e)
+        self.rpages = str(arg)
 
     def do_parser(self, arg):
         """Set parser."""
-        try:
-            if arg in acceptedParsers:
-                self.parser = str(arg)
-            else:
-                print("The parser you have chosen does not exist. See list of accepted parsers.")
-        except Exception as e:
-            print(e)
+        if arg in acceptedParsers:
+            self.parser = str(arg)
+        else:
+            print(f"{Fore.RED}The parser chosen does not exist. See list of accepted parsers.{Style.RESET_ALL}")
 
     def do_info(self, arg):  # print server, port, username, password....
         """View the information you have entered so far."""
-        try:
-            print("CSV File: " + self.csv_file)
-            print("CSV Mode: " + self.csv_mode)
-            print("Initial Row: " + str(self.initial_row))
-            print("Initial Webpage: " + self.initial_webpage)
-            print("Rest of Pages: " + self.rpages)
-            print("Variable: " + str(self.variable))
-            print("Parser: " + str(self.parser))
-        except Exception as e:
-            print(e)
+        print(Fore.RED)
+        print("CSV File: " + self.csv_file)
+        print("CSV Mode: " + self.csv_mode)
+        print("Initial Row: " + str(self.initial_row))
+        print("Initial Webpage: " + self.initial_webpage)
+        print("Rest of Pages: " + self.rpages)
+        print("Variable: " + str(self.variable))
+        print("Parser: " + str(self.parser))
+        print(Style.RESET_ALL)
 
     @staticmethod
     def do_parsers(arg):
         """Show list of parsers you can use."""
-        print("\nAvailable Parsers:\n1)html5lib\n2)lxml\n3)html.parser")
+        print(f"{Fore.RED}\nAvailable Parsers:\n1)html5lib\n2)lxml\n3)html.parser{Style.RESET_ALL}")
 
     @staticmethod
     def do_modes(arg):
         """Show the available file modes which can be used to open files."""
+        print(Fore.RED)
         print(
             "1)r: Opens the file in read-only mode. Starts reading from the beginning of the file and is the default "
             "mode for the open() function.")
@@ -164,23 +152,25 @@ class Scraper(cmd.Cmd):
         print("9)ab: Opens a file for appending in binary mode.")
         print("10)a+: Opens a file for both appending and reading.")
         print("11)ab+: Opens a file for both appending and reading in binary mode.")
+        print(Style.RESET_ALL)
 
     def do_scrape(self, arg):
         """Scrape data from specified webpages."""
-        print("\nScraping Operation Initiated: ")
+        print(f"\n{Fore.GREEN}Scraping Operation Initiated: ")
         try:
             csv_file = open(self.csv_file, self.csv_mode, newline='')
             csv_writer = csv.writer(csv_file)
             csv_writer.writerow(self.initial_row)
 
-            print("\nCSV File: " + self.csv_file)
-            print("CSV Mode: " + self.csv_mode)
-            print("Initial Row: " + str(self.initial_row))
-            print("Initial Webpage: " + self.initial_webpage)
-            print("Rest of Pages: " + self.rpages)
-            print("Variable: " + str(self.variable))
+            print(f"{Fore.BLUE}\nCSV File: {Fore.GREEN}" + self.csv_file)
+            print(f"{Fore.BLUE}CSV Mode: {Fore.GREEN}" + self.csv_mode)
+            print(f"{Fore.BLUE}Initial Row: {Fore.GREEN}" + str(self.initial_row))
+            print(f"{Fore.BLUE}Initial Webpage: {Fore.GREEN}" + self.initial_webpage)
+            print(f"{Fore.BLUE}Rest of Pages: {Fore.GREEN}" + self.rpages)
+            print(f"{Fore.BLUE}Variable: {Fore.GREEN}" + str(self.variable))
+            print(Style.RESET_ALL)
         except Exception as e:
-            print(e)
+            print(f"{Fore.RED}{e}{Style.RESET_ALL}")
 
         x = 2
         webpages = [self.initial_webpage]
@@ -191,44 +181,48 @@ class Scraper(cmd.Cmd):
                 webpages.append(new_page)
                 x += 1
         except Exception as e:
-            print(e)
+            print(f"{Fore.RED}{e}{Style.RESET_ALL}")
             pass
 
         try:
+            print(Fore.BLUE)
             print("\nWebpages: ")
             for webpage in webpages:
+                print(Fore.GREEN)
                 print(webpage)
+            print(Style.RESET_ALL)
         except Exception as e:
-            print(e)
+            print(f"{Fore.RED}{e}{Style.RESET_ALL}")
 
         elements_list = []
         class_list = []
         element_index = 1
         while True:
-            element = input(f'Element {element_index}: ')
+            element = input(f'{Fore.BLUE}Element {element_index}: {Fore.GREEN}')
             if element in exitInputs:
                 break
             else:
                 elements_list.append(element)
-                class_of_element = input(f'Class of Element {element_index}: ')
+                class_of_element = input(f'{Fore.BLUE}Class of Element {element_index}: {Fore.GREEN}')
                 class_list.append(class_of_element)
                 element_index += 1
-
+        print(Fore.BLUE)
         print("\nElements: ")
         for (element, _class) in zip(elements_list, class_list):
-            print(f"{element} of class = {_class}")
+            print(f"{Fore.BLUE}{element} of class = {Fore.GREEN}{_class}{Style.RESET_ALL}")
         print("\n")
 
         for page in webpages:
             try:
-                print(f"\nCurrent Page: {page}")
+                print(f"\n{Fore.BLUE}Current Page: {Fore.GREEN}{page}{Style.RESET_ALL}")
                 driver = webdriver.Chrome()
                 driver.get(page)
                 page_soup = BeautifulSoup(driver.page_source, self.parser)
             except Exception as e:
-                print(e)
+                print(f"{Fore.RED}{e}{Style.RESET_ALL}")
                 break
 
+            print(Fore.RED)
             individual_element_data = []
             for (element, element_class) in zip(elements_list, class_list):
                 if element_class == '#':
@@ -240,13 +234,13 @@ class Scraper(cmd.Cmd):
                     data = page_soup.find_all(element, class_=_class)
                 individual_element_data.append(data)
 
-            print(f"\nScraped Data From Elements: \n{individual_element_data}")
+            print(f"\n{Fore.BLUE}Scraped Data From Elements: {Fore.GREEN}\n{individual_element_data}")
 
             length_of_element_data = len(individual_element_data[0])
             print(
-                f"\nNumber of Elements Scraped in this Page: {length_of_element_data}")
+                f"\n{Fore.BLUE}Number of Elements Scraped in this Page: {Fore.GREEN}{length_of_element_data}")
 
-            print(f"\nNow Writing to CSV File: ")
+            print(f"\n{Fore.RED}Now Writing to CSV File: {Fore.GREEN}")
             x = 0
             while x < length_of_element_data:
                 row = []
@@ -257,7 +251,7 @@ class Scraper(cmd.Cmd):
                 x += 1
                 csv_writer.writerow(row)
 
-        print("\nScraping Operation Terminated Successfully.\n")
+        print(f"\n{Fore.GREEN}Scraping Operation Terminated Successfully.\n{Style.RESET_ALL}")
 
     # CSV Functions
     def do_wrow(self, arg):
@@ -267,14 +261,14 @@ class Scraper(cmd.Cmd):
             csv_writer = csv.writer(csv_file)
             csv_writer.writerow(arg.split(','))
         except Exception as e:
-            print(e)
+            print(f"{Fore.RED}{e}{Style.RESET_ALL}")
 
     def do_ocsv(self, arg):
         """Open the chosen CSV file to view."""
         try:
             os.startfile(self.csv_file)
         except Exception as e:
-            print(e)
+            print(f"{Fore.RED}{e}{Style.RESET_ALL}")
 
     # CMD Functions
     def do_prompt(self, arg):
@@ -282,7 +276,7 @@ class Scraper(cmd.Cmd):
         try:
             self.prompt = arg
         except Exception as e:
-            print(e)
+            print(f"{Fore.RED}{e}{Style.RESET_ALL}")
 
     @staticmethod
     def do_clear(arg):
@@ -292,7 +286,9 @@ class Scraper(cmd.Cmd):
     @staticmethod
     def do_date(arg):
         """Print Date and Time."""
+        print(Fore.RED)
         print(datetime.datetime.now())
+        print(Style.RESET_ALL)
 
     @staticmethod
     def do_ping(arg):
@@ -300,14 +296,14 @@ class Scraper(cmd.Cmd):
         try:
             os.system('ping ' + str(arg))
         except Exception as e:
-            print(e)
+            print(f"{Fore.RED}{e}{Style.RESET_ALL}")
 
     def do_scsv(self, arg):
         """Search for word or sentence in the chosen CSV file."""
         try:
             os.system(f"FIND \"{str(arg)}\" {self.csv_file}")
         except Exception as e:
-            print(e)
+            print(f"{Fore.RED}{e}{Style.RESET_ALL}")
 
     @staticmethod
     def do_open(arg):
@@ -315,7 +311,7 @@ class Scraper(cmd.Cmd):
         try:
             os.startfile(arg)
         except Exception as e:
-            print(e)
+            print(f"{Fore.RED}{e}{Style.RESET_ALL}")
 
     @staticmethod
     def do_about(arg):
@@ -376,4 +372,5 @@ class Scraper(cmd.Cmd):
 
 
 if __name__ == '__main__':
-    Scraper().cmdloop()
+    scraper = Scraper()
+    scraper.cmdloop()
