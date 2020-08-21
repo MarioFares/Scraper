@@ -38,10 +38,15 @@ import cmd
 import csv
 import datetime as datetime
 import os
-
-from bs4 import BeautifulSoup
-from colorama import init, Fore, Style
-from selenium import webdriver
+try:
+    from bs4 import BeautifulSoup
+    from colorama import init, Fore, Style
+    from selenium import webdriver
+except ModuleNotFoundError as error:
+    print(f"{error}")
+    print("You cannot run this script without this module.")
+    input()
+    exit(1)
 init(autoreset=False)
 
 exitInputs = ['leave', 'break', 'quit', 'exit', 'end']
